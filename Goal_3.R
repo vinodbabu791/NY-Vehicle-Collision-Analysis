@@ -169,39 +169,3 @@ plot3 <- ggplot(data = percent_data,aes(x = Factor_Percent,y = Contributing_Fact
         labs(title="Summary of Factors causing Accidents",x = 'Percentage',y = 'Factors')+
         scale_x_continuous(breaks = c(0,5,10,15,20,25,30,35,40),labels = paste0(seq(0,40,5),'%'))
 plot3
-
-
-
-
-
-####Motion chart
-
-data_motion_chart <- goal3_data %>% group_by(year_group,Contributing_Factor_Vehicle) %>% summarise('Count of Accidents' = n())
-data_motion_chart <- ungroup(data_motion_chart)
-data_motion_chart$year_group <- as.character(data_motion_chart$year_group)
-data_motion_chart$year_group <- as.integer(data_motion_chart$year_group)
-motion_chart <- gvisMotionChart(data = filter(data_motion_chart,Contributing_Factor_Vehicle %in% c('Illness of Driver','Improper Vehicle','Inadequate driving skills','Infrastructure Failure','Traffic Violation')),
-                                idvar = 'Contributing_Factor_Vehicle',
-                                timevar = 'year_group',
-                                yvar = 'Count of Accidents',
-                                options = list(height = 420,width = 500,showSidePanel=FALSE))
-plot(motion_chart)
-
-##Map_chart
-
-map_data <- data.frame(master_data[c('Borough','Latitude','Longitude','Killed')],stringsAsFactors = FALSE)
-map_data <- filter(map_data,!(is.na(map_data$Latitude & map_data$Longitude)) & !(Killed ==0))
-map_data$Borough <- factor(map_data$Borough,
-                           levels = c('BRONX','BROOKLYN','MANHATTAN','QUEENS','STATEN ISLAND',''),
-                           labels = c('BRONX','BROOKLYN','MANHATTAN','QUEENS','STATEN ISLAND','Others'))
-
-map_plot <- get_googlemap(center = c(lon = -73.93,lat = 40.73),zoom = 11, maptype = 'roadmap')
-
-ggmap(map_plot)+
-  geom_point(data = map_data,aes(x = Longitude,y = Latitude),alpha = 0.5,col = 'red')+
-  theme_bw(base_size = 15)+
-  facet_wrap(~Borough)+
-  labs(title = 'Geographical representation of Fatal accident zones in New York city', x = 'Longitude',y = 'Latitude')
-
-
-
